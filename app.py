@@ -1,7 +1,7 @@
 import openai
 import streamlit as st
 
-st.title("ChatGPT-like clone")
+st.title("Shawn Beck")
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -18,7 +18,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": system_prompt}]
 
 input_box = st.empty()
-prompt = input_box.text_input("Type your message here")
+prompt = input_box.text_input("I am Shawn Beck. Ask me anything", key="input1")
 
 for message in st.session_state.messages:
     # Skip displaying the system message
@@ -31,7 +31,7 @@ for message in st.session_state.messages:
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.markdown(f'<p style="color: black;">{prompt}</p>', unsafe_allow_html=True)  # User input in black
-    input_box.text_input("Type your message here", value="")  # Clear the input box
+    input_box.text_input("I am Shawn Beck. Ask me anything", value="", key="input2")  # Clear the input box
 
     with st.spinner('Assistant is typing...'):
         full_response = ""
