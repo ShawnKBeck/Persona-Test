@@ -20,16 +20,16 @@ if "messages" not in st.session_state:
 for message in st.session_state.messages:
     # Skip displaying the system message
     if message["role"] != "system":
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        if message["role"] == "user":
+            st.write(f'User: {message["content"]}')
+        else:
+            st.write(f'Assistant: {message["content"]}')
 
 if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message(""):
-        st.markdown(prompt)
+    st.write(f'User: {prompt}')
 
-    with st.chat_message(""):
-        message_placeholder = st.empty()
+    with st.spinner('Assistant is typing...'):
         full_response = ""
         for response in openai.ChatCompletion.create(
             model=st.session_state["openai_model"],
@@ -40,6 +40,5 @@ if prompt := st.chat_input("What is up?"):
             stream=True,
         ):
             full_response += response.choices[0].delta.get("content", "")
-            message_placeholder.markdown(full_response + "▌")
-        message_placeholder.markdown(full_response)
+        st.write(f'Assistant: {full_response}')
     st.session_state.messages.append({"role": "assistant", "content": full_response})
