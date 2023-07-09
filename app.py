@@ -21,13 +21,13 @@ for message in st.session_state.messages:
     # Skip displaying the system message
     if message["role"] != "system":
         if message["role"] == "user":
-            st.write(f'**{message["content"]}**')  # User messages in bold
+            st.markdown(f'<p style="color: black;">{message["content"]}</p>', unsafe_allow_html=True)  # User messages in black
         else:
-            st.write(f'*{message["content"]}*')  # Assistant messages in italic
+            st.markdown(f'<p style="color: gray;">{message["content"]}</p>', unsafe_allow_html=True)  # Assistant messages in gray
 
 if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    st.write(f'**{prompt}**')  # User input in bold
+    st.markdown(f'<p style="color: black;">{prompt}</p>', unsafe_allow_html=True)  # User input in black
 
     with st.spinner('Assistant is typing...'):
         full_response = ""
@@ -40,6 +40,6 @@ if prompt := st.chat_input("What is up?"):
             stream=True,
         ):
             full_response += response.choices[0].delta.get("content", "")
-        st.write(f'*{full_response}*')  # Assistant response in italic
+        st.markdown(f'<p style="color: gray;">{full_response}</p>', unsafe_allow_html=True)  # Assistant response in gray
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
