@@ -2,6 +2,7 @@ import openai
 import streamlit as st
 
 st.title("ChatGPT-like clone")
+prompt = st.text_input("Type your message here")
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -25,7 +26,7 @@ for message in st.session_state.messages:
         else:
             st.markdown(f'<p style="color: gray;">{message["content"]}</p>', unsafe_allow_html=True)  # Assistant messages in gray
 
-if prompt := st.chat_input("What is up?"):
+if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.markdown(f'<p style="color: black;">{prompt}</p>', unsafe_allow_html=True)  # User input in black
 
@@ -42,4 +43,3 @@ if prompt := st.chat_input("What is up?"):
             full_response += response.choices[0].delta.get("content", "")
         st.markdown(f'<p style="color: gray;">{full_response}</p>', unsafe_allow_html=True)  # Assistant response in gray
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
