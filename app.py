@@ -17,22 +17,19 @@ if "messages" not in st.session_state:
     # Include the system message as the first message
     st.session_state.messages = [{"role": "system", "content": system_prompt}]
 
-if "input_key" not in st.session_state:
-    st.session_state.input_key = 0
-
-prompt = st.text_input("I am Shawn Beck. Ask me anything", key=f"input{st.session_state.input_key}")
+prompt = st.text_input("I am Shawn Beck. Ask me anything")
 
 for message in st.session_state.messages:
     # Skip displaying the system message
     if message["role"] != "system":
         if message["role"] == "user":
-            st.markdown(f'<p style="color: black;">{message["content"]}</p>', unsafe_allow_html=True)  # User messages in black
+            st.markdown(f'<p style="color: gray;">{message["content"]}</p>', unsafe_allow_html=True)  # User messages in gray
         else:
-            st.markdown(f'<p style="color: gray;">{message["content"]}</p>', unsafe_allow_html=True)  # Assistant messages in gray
+            st.markdown(f'<p style="color: black;">{message["content"]}</p>', unsafe_allow_html=True)  # Assistant messages in black
 
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
-    st.markdown(f'<p style="color: black;">{prompt}</p>', unsafe_allow_html=True)  # User input in black
+    st.markdown(f'<p style="color: gray;">{prompt}</p>', unsafe_allow_html=True)  # User input in gray
 
     with st.spinner('Assistant is typing...'):
         full_response = ""
@@ -45,8 +42,5 @@ if prompt:
             stream=True,
         ):
             full_response += response.choices[0].delta.get("content", "")
-        st.markdown(f'<p style="color: gray;">{full_response}</p>', unsafe_allow_html=True)  # Assistant response in gray
+        st.markdown(f'<p style="color: black;">{full_response}</p>', unsafe_allow_html=True)  # Assistant response in black
     st.session_state.messages.append({"role": "assistant", "content": full_response})
-
-    # Clear the input box by incrementing the key
-    st.session_state.input_key += 1
