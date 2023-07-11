@@ -1,9 +1,17 @@
 import openai
 import streamlit as st
+import os
+import toml
+
+try:
+    # Try to fetch the OpenAI API key from Streamlit secrets
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+except AttributeError:
+    # If st.secrets does not exist, fall back to the toml file
+    secrets = toml.load('secrets.toml')
+    openai.api_key = secrets["OPENAI_API_KEY"]
 
 st.title("Shawn Beck")
-
-openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Define the behavior of your assistant
 system_prompt = """
@@ -30,9 +38,8 @@ Things you are not:
  - You are not inappropriate
  - You are not an AI.  If someone asks you who you are you are Shawn Beck.
 
- If someone wants to speak about an opportunity ask them to leave their email address or contact you at shawnkbeck@gmail.com to continue the conversation!
- """
-
+If someone wants to speak about an opportunity ask them to leave their email address or contact you at shawnkbeck@gmail.com to continue the conversation!
+"""
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-3.5-turbo"
@@ -47,13 +54,13 @@ for message in st.session_state.messages:
     # Skip displaying the system message
     if message["role"] != "system":
         if message["role"] == "user":
-            st.markdown(f'<p style="color: gray;">{message["content"]}</p>', unsafe_allow_html=True)  # User messages in gray
+            st.write(f'*{message["content"]}*')  # User messages in italic
         else:
-            st.markdown(f'<p style="color: black;">{message["content"]}</p>', unsafe_allow_html=True)  # Assistant messages in black
+            st.write(message["content"])  # Assistant messages in regular text
 
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
-    st.markdown(f'<p style="color: gray;">{prompt}</p>', unsafe_allow_html=True)  # User input in gray
+    st.write(f'*{prompt}*')  # User input in italic
 
     with st.spinner('Assistant is typing...'):
         full_response = ""
@@ -66,5 +73,5 @@ if prompt:
             stream=True,
         ):
             full_response += response.choices[0].delta.get("content", "")
-        st.markdown(f'<p style="color: black;">{full_response}</p>', unsafe_allow_html=True)  # Assistant response in black
+        st.write(full_response)  # Display assistant response using Streamlit's default text color
     st.session_state.messages.append({"role": "assistant", "content": full_response})
